@@ -3,6 +3,7 @@ import { Router, Event, NavigationStart,NavigationEnd, NavigationError, Navigati
 
 import { AuthService } from './user/auth.service';
 import { slideInAnimation } from './app.animation';
+import { MessageService } from './messages/message.service';
 
 @Component({
   selector: 'pm-root',
@@ -18,6 +19,10 @@ export class AppComponent {
     return this.authService.isLoggedIn;
   }
 
+  get isMessageDisplayed(): boolean {
+    return this.messageService.isDisplayed;
+  }
+
   get userName(): string {
     if (this.authService.currentUser) {
       return this.authService.currentUser.userName;
@@ -26,7 +31,8 @@ export class AppComponent {
   }
 
   constructor(private authService: AuthService,
-              private router: Router) { 
+              private router: Router,
+              private messageService: MessageService) { 
                 this.router.events.subscribe((routerEvent: Event) => {
                   this.checkRouterEvent(routerEvent);
                 });
@@ -36,6 +42,16 @@ export class AppComponent {
     this.authService.logout();
     // Use the navigateByUrl() method during logout to ensure secondary routes or existing params are removed!
     this.router.navigateByUrl('/welcome');
+  }
+
+  displayMessages(): void {
+    this.router.navigate([{ outlets: { popup: ['messages'] } }]);
+    this.messageService.isDisplayed = true;
+  }
+
+  hideMessages(): void {
+    this.router.navigate([{ outlets: { popup: null } }]);
+    this.messageService.isDisplayed = false;
   }
 
   checkRouterEvent(routerEvent: Event): void{
