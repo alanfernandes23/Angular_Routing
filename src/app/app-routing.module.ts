@@ -5,6 +5,7 @@ import { WelcomeComponent } from './home/welcome.component';
 import { PageNotFoundComponent } from './page-not-found.component';
 
 import { AuthGuard } from './user/auth.guard';
+import { SelectiveStrategyService } from './user/selective-strategy.service';
 
 @NgModule({
   declarations: [],
@@ -15,16 +16,19 @@ import { AuthGuard } from './user/auth.guard';
       { path: 'welcome' , component: WelcomeComponent },
       { 
         path: 'products',
-        canLoad: [AuthGuard],
+        // canLoad: [AuthGuard],
+        canActivate: [AuthGuard],
+        data: { preload: true },
         loadChildren: () =>
           import('./products/product.module').then(featureModule => featureModule.ProductModule),
       },
       { path: '' , redirectTo: 'welcome' , pathMatch: 'full'},
       { path: '**' , component: PageNotFoundComponent },
     ],
-    /* {
-      enableTracing: true
-    } */
+    {
+      // enableTracing: true,
+      preloadingStrategy: SelectiveStrategyService
+    }
     ),
   ],
   exports: [RouterModule]
